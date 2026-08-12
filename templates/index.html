@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Dashboard</h1>
+
+        <!-- Search Form -->
+        <form action="/" method="POST" class="search-form">
+            <input 
+                type="text" 
+                name="city" 
+                placeholder="Enter city name..." 
+                value="{{ city if city else '' }}"
+                required
+            >
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- 10. Error State -->
+        {% if city and not weather_data %}
+            <div class="error-message">
+                <h3>Unable to find weather data</h3>
+                <p>Please check the city name and try again.</p>
+            </div>
+        {% endif %}
+
+        <!-- 10 & 11. Weather Content (Only displays when weather_data exists) -->
+        {% if weather_data %}
+            <!-- Current Weather Section -->
+            <div class="current-weather-card">
+                <h2>{{ weather_data.location.name }}, {{ weather_data.location.country }}</h2>
+                
+                <div class="main-weather">
+                    <span class="weather-icon">{{ weather_data.weather.current.icon }}</span>
+                    <span class="temp">{{ weather_data.weather.current.temperature }}°C</span>
+                </div>
+
+                <p class="condition">{{ weather_data.weather.current.condition }}</p>
+
+                <div class="weather-details">
+                    <p><strong>Humidity:</strong> {{ weather_data.weather.current.humidity }}%</p>
+                    <p><strong>Wind Speed:</strong> {{ weather_data.weather.current.wind_speed }} km/h</p>
+                </div>
+            </div>
+
+            <!-- 7-Day Forecast Section -->
+            <h3>7-Day Forecast</h3>
+            <div class="forecast-grid">
+                {% for day in weather_data.weather.forecast %}
+                    <div class="forecast-card">
+                        <p class="forecast-date">{{ day.date }}</p>
+                        <div class="forecast-icon">{{ day.icon }}</div>
+                        <p class="forecast-condition">{{ day.condition }}</p>
+                        
+                        <div class="forecast-temperature">
+                            <strong>{{ day.max_temp }}°</strong>
+                            <span>{{ day.min_temp }}°</span>
+                        </div>
+                        
+                        <p class="rain-probability">💧 {{ day.rain_probability }}% rain</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
